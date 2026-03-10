@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="pt-BR" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CineScope — Buscador de Filmes</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <header class="header">
+      <div class="header-inner">
+        <a href="#" class="logo" onclick="exibirInicio()">
+          <span class="logo-icon">◈</span>
+          <span class="logo-text">CineScope</span>
+        </a>
+
+        <nav class="nav">
+          <button class="nav-btn active" id="nav-home" onclick="exibirInicio()">
+            Início
+          </button>
+          <button
+            class="nav-btn"
+            id="nav-favorites"
+            onclick="exibirFavoritos()"
+          >
+            Favoritos
+            <span class="fav-count" id="fav-count">0</span>
+          </button>
+        </nav>
+
+        <div class="header-right">
+          <button
+            class="theme-toggle"
+            onclick="alternarTema()"
+            title="Alternar tema"
+          >
+            <span class="theme-icon">◐</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <section class="hero" id="hero">
+      <div class="hero-bg">
+        <div class="hero-orb orb-1"></div>
+        <div class="hero-orb orb-2"></div>
+        <div class="hero-orb orb-3"></div>
+      </div>
+      <div class="hero-content">
+        <p class="hero-eyebrow">Mais de 500.000 títulos</p>
+        <h1 class="hero-title">
+          O cinema<br /><em>que você ama,</em><br />ao alcance.
+        </h1>
+        <div class="search-wrapper">
+          <div class="search-bar">
+            <span class="search-icon">⌕</span>
+            <input
+              type="text"
+              id="search-input"
+              class="search-input"
+              placeholder="Busque por título, diretor, gênero…"
+              autocomplete="off"
+            />
+            <button
+              class="search-clear"
+              id="search-clear"
+              onclick="limparBusca()"
+            >
+              ✕
+            </button>
+          </div>
+          <div class="search-filters">
+            <label class="filter-label">Ordenar por:</label>
+            <select
+              class="filter-select"
+              id="sort-select"
+              onchange="aoAlterarOrdenacao()"
+            >
+              <option value="popularity.desc">Popularidade</option>
+              <option value="vote_average.desc">Melhor Avaliação</option>
+              <option value="release_date.desc">Mais Recentes</option>
+              <option value="revenue.desc">Bilheteria</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <main class="main" id="main-content">
+      <div id="home-view">
+        <div class="section-header">
+          <h2 class="section-title" id="section-title">Em Alta Agora</h2>
+          <span class="result-count" id="result-count"></span>
+        </div>
+
+        <div class="loading-grid" id="loading-state">
+          <div class="skeleton-card" style="--delay: 0s"></div>
+          <div class="skeleton-card" style="--delay: 0.1s"></div>
+          <div class="skeleton-card" style="--delay: 0.2s"></div>
+          <div class="skeleton-card" style="--delay: 0.3s"></div>
+          <div class="skeleton-card" style="--delay: 0.4s"></div>
+          <div class="skeleton-card" style="--delay: 0.5s"></div>
+          <div class="skeleton-card" style="--delay: 0.6s"></div>
+          <div class="skeleton-card" style="--delay: 0.7s"></div>
+        </div>
+
+        <div class="empty-state" id="empty-state" style="display: none">
+          <div class="empty-icon">⊘</div>
+          <h3>Nenhum filme encontrado</h3>
+          <p>Tente outro termo ou verifique a ortografia.</p>
+        </div>
+
+        <div class="movie-grid" id="movie-grid"></div>
+
+        <div class="pagination" id="pagination" style="display: none">
+          <button class="page-btn" id="prev-btn" onclick="mudarPagina(-1)">
+            ← Anterior
+          </button>
+          <div class="page-numbers" id="page-numbers"></div>
+          <button class="page-btn" id="next-btn" onclick="mudarPagina(1)">
+            Próxima →
+          </button>
+        </div>
+      </div>
+
+      <div id="favorites-view" style="display: none">
+        <div class="section-header">
+          <h2 class="section-title">Meus Favoritos</h2>
+          <button class="clear-fav-btn" onclick="limparTodosFavoritos()">
+            Limpar tudo
+          </button>
+        </div>
+        <div class="empty-state" id="fav-empty" style="display: none">
+          <div class="empty-icon">♡</div>
+          <h3>Nenhum favorito ainda</h3>
+          <p>Adicione filmes clicando no ícone de coração.</p>
+        </div>
+        <div class="movie-grid" id="favorites-grid"></div>
+      </div>
+    </main>
+
+    <div class="modal-overlay" id="modal-overlay" onclick="fecharModal(event)">
+      <div class="modal" id="modal">
+        <button class="modal-close" onclick="fecharModalBotao()">✕</button>
+
+        <div class="modal-banner" id="modal-banner">
+          <div class="modal-banner-overlay"></div>
+        </div>
+
+        <div class="modal-body">
+          <div class="modal-poster-wrap">
+            <img class="modal-poster" id="modal-poster" src="" alt="" />
+            <div class="modal-actions">
+              <button
+                class="fav-btn-modal"
+                id="modal-fav-btn"
+                onclick="alternarFavoritoDoModal()"
+              >
+                <span id="modal-fav-icon">♡</span> Favoritar
+              </button>
+            </div>
+          </div>
+
+          <div class="modal-info">
+            <div class="modal-meta">
+              <span class="modal-year" id="modal-year"></span>
+              <span class="modal-rating" id="modal-rating"></span>
+              <span class="modal-runtime" id="modal-runtime"></span>
+            </div>
+            <h2 class="modal-title" id="modal-title"></h2>
+            <p class="modal-tagline" id="modal-tagline"></p>
+
+            <div class="modal-genres" id="modal-genres"></div>
+
+            <div class="modal-section">
+              <h4 class="modal-section-label">Sinopse</h4>
+              <p class="modal-overview" id="modal-overview"></p>
+            </div>
+
+            <div class="modal-details-grid">
+              <div class="modal-detail">
+                <span class="detail-label">Lançamento</span>
+                <span class="detail-value" id="modal-release"></span>
+              </div>
+              <div class="modal-detail">
+                <span class="detail-label">Avaliação</span>
+                <span class="detail-value" id="modal-votes"></span>
+              </div>
+              <div class="modal-detail">
+                <span class="detail-label">Orçamento</span>
+                <span class="detail-value" id="modal-budget"></span>
+              </div>
+              <div class="modal-detail">
+                <span class="detail-label">Receita</span>
+                <span class="detail-value" id="modal-revenue"></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="toast" id="toast"></div>
+
+    <script src="services/api.js"></script>
+    <script src="components/movieCard.js"></script>
+    <script src="components/modal.js"></script>
+    <script src="components/favorites.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
