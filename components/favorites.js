@@ -16,6 +16,11 @@ function initFavorites() {
   atualizarContagemFavoritos();
 }
 
+// Compatibilidade: versões antigas chamavam updateFavCount()
+function updateFavCount() {
+  atualizarContagemFavoritos();
+}
+
 function salvarFavoritos() {
   try {
     const arr = Array.from(favorites.values());
